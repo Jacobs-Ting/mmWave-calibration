@@ -70,9 +70,14 @@ else:
     EF[EF < 0] = 0 
 
 def quantize_phase(phase_array):
-    if bits == "Ideal": return phase_array
+    if bits == "Ideal": 
+        return np.mod(phase_array, 2 * np.pi)
+    
     step = 2 * np.pi / (2**bits)
-    return np.round(phase_array / step) * step
+    quantized_phase = np.round(phase_array / step) * step
+    
+    # [修正] 強制將 2π (360度) 繞回 0，符合真實硬體狀態
+    return np.mod(quantized_phase, 2 * np.pi)
 
 def calculate_total_pattern_db(phases, amplitudes, hw_phase_error_rad):
     AF = np.zeros_like(theta_scan, dtype=complex)
